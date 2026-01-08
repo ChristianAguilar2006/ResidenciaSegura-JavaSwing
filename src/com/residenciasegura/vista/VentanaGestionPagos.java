@@ -1,7 +1,6 @@
 package com.residenciasegura.vista;
 
 import com.residenciasegura.controlador.ControladorPago;
-import com.residenciasegura.controlador.ControladorUsuario;
 import com.residenciasegura.modelo.Pago;
 import com.residenciasegura.modelo.Usuario;
 import java.math.BigDecimal;
@@ -20,13 +19,11 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
     
     private final Usuario usuarioActual;
     private final ControladorPago controladorPago;
-    private final ControladorUsuario controladorUsuario;
     private DefaultTableModel modeloTabla;
     
     public VentanaGestionPagos(Usuario usuario) {
         this.usuarioActual = usuario;
         this.controladorPago = new ControladorPago();
-        this.controladorUsuario = new ControladorUsuario();
         initComponents();
         configurarVentana();
         cargarDatos();
@@ -72,14 +69,6 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
         }
     }
     
-    
-    private void cargarUsuarios() {
-        List<Usuario> usuarios = controladorUsuario.obtenerTodos();
-        comboUsuario.removeAllItems();
-        for (Usuario u : usuarios) {
-            comboUsuario.addItem(u.getNombre() + " (" + u.getCorreo() + ")");
-        }
-    }
     
     private void cargarDatos() {
         modeloTabla.setRowCount(0);

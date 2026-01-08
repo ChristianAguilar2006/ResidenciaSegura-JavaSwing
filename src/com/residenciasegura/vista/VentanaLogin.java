@@ -136,9 +136,14 @@ public class VentanaLogin extends javax.swing.JFrame {
             return;
         }
 
+        System.out.println("=== INTENTO DE LOGIN ===");
+        System.out.println("Correo: " + correo);
+        System.out.println("Contraseña: " + (password.isEmpty() ? "(vacía)" : "***"));
+        
         Usuario usuario = controlador.autenticarUsuario(correo, password);
         
         if (usuario != null) {
+            System.out.println("=== LOGIN EXITOSO ===");
             JOptionPane.showMessageDialog(this, 
                 "¡Bienvenido " + usuario.getNombre() + "!", 
                 "Acceso Concedido", 
@@ -148,8 +153,14 @@ public class VentanaLogin extends javax.swing.JFrame {
             abrirDashboard(usuario);
             this.dispose();
         } else {
+            System.out.println("=== LOGIN FALLIDO ===");
             JOptionPane.showMessageDialog(this, 
-                "Credenciales incorrectas. Por favor, verifique sus datos.", 
+                "Credenciales incorrectas o error de conexión.\n\n" +
+                "Verifica:\n" +
+                "1. Que MySQL esté ejecutándose\n" +
+                "2. Que la base de datos 'ResidenciaSegura' exista\n" +
+                "3. Que el correo y contraseña sean correctos\n\n" +
+                "Revisa la consola para más detalles.", 
                 "Error de Autenticación", 
                 JOptionPane.ERROR_MESSAGE);
             txtPassword.setText("");
