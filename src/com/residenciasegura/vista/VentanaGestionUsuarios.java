@@ -275,23 +275,9 @@ public class VentanaGestionUsuarios extends javax.swing.JFrame {
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
         try {
-            if (txtNombre.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese el nombre", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtCorreo.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese el correo", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtContrasena.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese la contraseña", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtDepartamento.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese el departamento", "Error", JOptionPane.ERROR_MESSAGE);
+            if (txtNombre.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || 
+                txtContrasena.getText().trim().isEmpty() || txtDepartamento.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -304,21 +290,20 @@ public class VentanaGestionUsuarios extends javax.swing.JFrame {
             usuario.setTelefono(txtTelefono.getText().trim().isEmpty() ? null : txtTelefono.getText().trim());
             
             if (controlador.crearUsuario(usuario)) {
-                JOptionPane.showMessageDialog(this, "Usuario creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarDatos();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al crear el usuario. Verifique que el correo no esté duplicado.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al crear usuario", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         int fila = tablaUsuarios.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un usuario de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -327,24 +312,14 @@ public class VentanaGestionUsuarios extends javax.swing.JFrame {
             Usuario usuario = controlador.obtenerPorId(idUsuario);
             
             if (usuario != null) {
-                // No permitir modificar el admin actual
                 if (usuario.getIdUsuario() == usuarioActual.getIdUsuario()) {
-                    JOptionPane.showMessageDialog(this, "No puede modificar su propio usuario desde aquí", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "No puede modificar su propio usuario", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
-                if (txtNombre.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese el nombre", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                if (txtCorreo.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese el correo", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                if (txtDepartamento.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese el departamento", "Error", JOptionPane.ERROR_MESSAGE);
+                if (txtNombre.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || 
+                    txtDepartamento.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Complete  los campos", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
@@ -355,45 +330,39 @@ public class VentanaGestionUsuarios extends javax.swing.JFrame {
                 usuario.setTelefono(txtTelefono.getText().trim().isEmpty() ? null : txtTelefono.getText().trim());
                 
                 if (controlador.actualizarUsuario(usuario)) {
-                    JOptionPane.showMessageDialog(this, "Usuario actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     cargarDatos();
                     limpiarCampos();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Error  actualizar", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int fila = tablaUsuarios.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un usuario de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         int idUsuario = (Integer) modeloTabla.getValueAt(fila, 0);
         
-        // No permitir eliminar el admin actual
         if (idUsuario == usuarioActual.getIdUsuario()) {
             JOptionPane.showMessageDialog(this, "No puede eliminar su propio usuario", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        int respuesta = JOptionPane.showConfirmDialog(this, 
-            "¿Está seguro que desea eliminar este usuario?", 
-            "Confirmar eliminación", 
-            JOptionPane.YES_NO_OPTION);
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Eliminar usuario?", "Confirmar", JOptionPane.YES_NO_OPTION);
         
         if (respuesta == JOptionPane.YES_OPTION) {
             if (controlador.eliminarUsuario(idUsuario)) {
-                JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarDatos();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed

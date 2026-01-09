@@ -366,7 +366,7 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                         comboEstado.setSelectedItem(pago.getEstado().getValor());
                         comboMetodo.setSelectedItem(pago.getMetodoPago().getValor());
                     } else {
-                        JOptionPane.showMessageDialog(this, "Solo puede editar sus propios pagos", "Información", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Solo puede editar sus propios pagos", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -374,21 +374,13 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
     }//GEN-LAST:event_tablaPagosMouseClicked
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-        // Solo residentes pueden crear pagos
         if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
-            JOptionPane.showMessageDialog(this, "Los administradores solo pueden consultar pagos", "Información", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         
         try {
-            // Validar campos
-            if (txtMonto.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese el monto", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtFecha.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese la fecha", "Error", JOptionPane.ERROR_MESSAGE);
+            if (txtMonto.getText().trim().isEmpty() || txtFecha.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -403,27 +395,24 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
             pago.setObservaciones(txtObservaciones.getText().trim().isEmpty() ? null : txtObservaciones.getText());
             
             if (controladorPago.crearPago(pago)) {
-                JOptionPane.showMessageDialog(this, "Pago registrado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarDatos();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar el pago", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al crear", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage() + "\nFormato de fecha: YYYY-MM-DD", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        // Solo residentes pueden actualizar sus propios pagos
         if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
-            JOptionPane.showMessageDialog(this, "Los administradores solo pueden consultar pagos", "Información", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         
         int fila = tablaPagos.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un pago de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un pago", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -439,13 +428,8 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                 }
                 
                 // Validar campos
-                if (txtMonto.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese el monto", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                if (txtFecha.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese la fecha", "Error", JOptionPane.ERROR_MESSAGE);
+                if (txtMonto.getText().trim().isEmpty() || txtFecha.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
@@ -461,29 +445,26 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                 pago.setComprobante(txtComprobante.getText().trim().isEmpty() ? null : txtComprobante.getText());
                 pago.setObservaciones(txtObservaciones.getText().trim().isEmpty() ? null : txtObservaciones.getText());
                 
-                if (controladorPago.actualizarPago(pago)) {
-                    JOptionPane.showMessageDialog(this, "Pago actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    cargarDatos();
-                    limpiarCampos();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar el pago", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (controladorPago.actualizarPago(pago)) {
+                        cargarDatos();
+                        limpiarCampos();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage() + "\nFormato de fecha: YYYY-MM-DD", "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // Solo residentes pueden eliminar sus propios pagos pendientes
         if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
-            JOptionPane.showMessageDialog(this, "Los administradores solo pueden consultar pagos", "Información", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         
         int fila = tablaPagos.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un pago de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un pago", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -504,23 +485,19 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                     return;
                 }
                 
-                int respuesta = JOptionPane.showConfirmDialog(this, 
-                    "¿Está seguro que desea eliminar este pago?", 
-                    "Confirmar eliminación", 
-                    JOptionPane.YES_NO_OPTION);
+                int respuesta = JOptionPane.showConfirmDialog(this, "¿Eliminar pago?", "Confirmar", JOptionPane.YES_NO_OPTION);
                 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     if (controladorPago.eliminarPago(idPago)) {
-                        JOptionPane.showMessageDialog(this, "Pago eliminado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                         cargarDatos();
                         limpiarCampos();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar el pago", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 

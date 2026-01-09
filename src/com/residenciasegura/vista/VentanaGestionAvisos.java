@@ -254,13 +254,8 @@ public class VentanaGestionAvisos extends javax.swing.JFrame {
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
         try {
-            if (txtTitulo.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese el título del aviso", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtMensaje.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese el mensaje del aviso", "Error", JOptionPane.ERROR_MESSAGE);
+            if (txtTitulo.getText().trim().isEmpty() || txtMensaje.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -272,21 +267,20 @@ public class VentanaGestionAvisos extends javax.swing.JFrame {
             aviso.setActivo(checkActivo.isSelected());
             
             if (controlador.crearAviso(aviso)) {
-                JOptionPane.showMessageDialog(this, "Aviso creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarDatos();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al crear el aviso", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al crear", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         int fila = tablaAvisos.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un aviso de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un aviso", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -311,38 +305,33 @@ public class VentanaGestionAvisos extends javax.swing.JFrame {
                 aviso.setActivo(checkActivo.isSelected());
                 
                 if (controlador.actualizarAviso(aviso)) {
-                    JOptionPane.showMessageDialog(this, "Aviso actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     cargarDatos();
                     limpiarCampos();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar el aviso", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Error al actualizar", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int fila = tablaAvisos.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un aviso de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un aviso", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        int respuesta = JOptionPane.showConfirmDialog(this, 
-            "¿Está seguro que desea eliminar este aviso?", 
-            "Confirmar eliminación", 
-            JOptionPane.YES_NO_OPTION);
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Eliminar aviso?", "Confirmar", JOptionPane.YES_NO_OPTION);
         
         if (respuesta == JOptionPane.YES_OPTION) {
             int idAviso = (Integer) modeloTabla.getValueAt(fila, 0);
             if (controlador.eliminarAviso(idAviso)) {
-                JOptionPane.showMessageDialog(this, "Aviso eliminado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarDatos();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el aviso", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed

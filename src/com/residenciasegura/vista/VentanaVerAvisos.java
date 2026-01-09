@@ -141,7 +141,7 @@ public class VentanaVerAvisos extends javax.swing.JFrame {
     private void btnVerDetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalleActionPerformed
         int fila = tablaAvisos.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un aviso de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un aviso", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         

@@ -129,10 +129,7 @@ public class VentanaLogin extends javax.swing.JFrame {
         String password = String.valueOf(txtPassword.getPassword()).trim();
 
         if (correo.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Por favor, complete todos los campos", 
-                "Campos Vacíos", 
-                JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -143,26 +140,11 @@ public class VentanaLogin extends javax.swing.JFrame {
         Usuario usuario = controlador.autenticarUsuario(correo, password);
         
         if (usuario != null) {
-            System.out.println("=== LOGIN EXITOSO ===");
-            JOptionPane.showMessageDialog(this, 
-                "¡Bienvenido " + usuario.getNombre() + "!", 
-                "Acceso Concedido", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
             // Abrir dashboard según el rol
             abrirDashboard(usuario);
             this.dispose();
         } else {
-            System.out.println("=== LOGIN FALLIDO ===");
-            JOptionPane.showMessageDialog(this, 
-                "Credenciales incorrectas o error de conexión.\n\n" +
-                "Verifica:\n" +
-                "1. Que MySQL esté ejecutándose\n" +
-                "2. Que la base de datos 'ResidenciaSegura' exista\n" +
-                "3. Que el correo y contraseña sean correctos\n\n" +
-                "Revisa la consola para más detalles.", 
-                "Error de Autenticación", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Credenciales invalidas", "Error", JOptionPane.ERROR_MESSAGE);
             txtPassword.setText("");
         }
     }//GEN-LAST:event_btnIniciarSesionActionPerformed

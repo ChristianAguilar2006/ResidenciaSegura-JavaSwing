@@ -152,24 +152,23 @@ public class VentanaGestionReportesGuardia extends javax.swing.JFrame {
     private void btnAtenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtenderActionPerformed
         int fila = tablaReportes.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un reporte de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un reporte", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         int idReporte = (Integer) modeloTabla.getValueAt(fila, 0);
         
         if (controlador.asignarGuardia(idReporte, usuarioActual.getIdUsuario())) {
-            JOptionPane.showMessageDialog(this, "Reporte asignado exitosamente. Estado cambiado a 'En Proceso'", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             cargarReportesPendientes();
         } else {
-            JOptionPane.showMessageDialog(this, "Error al atender el reporte", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAtenderActionPerformed
 
     private void btnVerDetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalleActionPerformed
         int fila = tablaReportes.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un reporte de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un reporte", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         

@@ -155,15 +155,8 @@ public class DashboardAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGestionAvisosActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
-        int respuesta = JOptionPane.showConfirmDialog(this, 
-            "¿Está seguro que desea cerrar sesión?", 
-            "Cerrar Sesión", 
-            JOptionPane.YES_NO_OPTION);
-        
-        if (respuesta == JOptionPane.YES_OPTION) {
-            this.dispose();
-            new VentanaLogin().setVisible(true);
-        }
+        this.dispose();
+        new VentanaLogin().setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -166,13 +166,8 @@ public class VentanaCrearReporte extends javax.swing.JFrame {
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
         try {
-            if (txtUbicacion.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese la ubicación del reporte", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtDescripcion.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese la descripción del reporte", "Error", JOptionPane.ERROR_MESSAGE);
+            if (txtUbicacion.getText().trim().isEmpty() || txtDescripcion.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -185,13 +180,12 @@ public class VentanaCrearReporte extends javax.swing.JFrame {
             reporte.setPrioridad(Reporte.Prioridad.fromString(comboPrioridad.getSelectedItem().toString()));
             
             if (controlador.crearReporte(reporte)) {
-                JOptionPane.showMessageDialog(this, "Reporte creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al crear el reporte", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al crear", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 

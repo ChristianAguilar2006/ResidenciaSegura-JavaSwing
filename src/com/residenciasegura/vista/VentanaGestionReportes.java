@@ -154,7 +154,7 @@ public class VentanaGestionReportes extends javax.swing.JFrame {
     private void btnVerDetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalleActionPerformed
         int fila = tablaReportes.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un reporte de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un reporte", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -187,22 +187,18 @@ public class VentanaGestionReportes extends javax.swing.JFrame {
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int fila = tablaReportes.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un reporte de la tabla", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un reporte", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        int respuesta = JOptionPane.showConfirmDialog(this, 
-            "¿Está seguro que desea eliminar este reporte?", 
-            "Confirmar eliminación", 
-            JOptionPane.YES_NO_OPTION);
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Eliminar reporte?", "Confirmar", JOptionPane.YES_NO_OPTION);
         
         if (respuesta == JOptionPane.YES_OPTION) {
             int idReporte = (Integer) modeloTabla.getValueAt(fila, 0);
             if (controlador.eliminarReporte(idReporte)) {
-                JOptionPane.showMessageDialog(this, "Reporte eliminado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarDatos();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el reporte", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed

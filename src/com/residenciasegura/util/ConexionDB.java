@@ -27,22 +27,16 @@ public class ConexionDB {
             
             // Crear y retornar la conexión
             Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
-            System.out.println("✓ Conexión exitosa a la base de datos");
+            System.out.println("Conexion exitosa a la base de datos");
             return conexion;
             
         } catch (ClassNotFoundException e) {
-            System.out.println("✗ ERROR: No se encontró el driver de MySQL");
-            System.out.println("  Asegúrate de tener mysql-connector-j en tu pom.xml");
+            System.out.println(" ERROR: No se encontró el driver de MySQL");
             e.printStackTrace();
             return null;
         } catch (Exception e) {
-            System.out.println("✗ ERROR al conectar a la base de datos:");
+            System.out.println("ERROR al conectar a la base de datos:");
             System.out.println("  Mensaje: " + e.getMessage());
-            System.out.println("  Verifica que:");
-            System.out.println("  1. MySQL esté ejecutándose");
-            System.out.println("  2. La base de datos 'ResidenciaSegura' exista");
-            System.out.println("  3. El usuario y contraseña sean correctos");
-            System.out.println("  4. La URL sea correcta: " + URL);
             e.printStackTrace();
             return null;
         }
