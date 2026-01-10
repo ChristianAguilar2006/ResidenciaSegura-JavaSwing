@@ -70,12 +70,12 @@ src/com/residenciasegura/
 
 ## Funcionalidades Implementadas
 
-### ✅ Sistema de Autenticación
+### Sistema de Autenticación
 - Login con validación de credenciales
 - Redirección según rol del usuario
 - Dashboards diferenciados por rol
 
-### 🔄 Próximas Funcionalidades
+### Próximas Funcionalidades
 - Gestión de usuarios (CRUD)
 - Gestión de pagos
 - Gestión de reportes

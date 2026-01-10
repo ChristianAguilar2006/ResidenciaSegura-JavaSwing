@@ -71,8 +71,6 @@ public class ControladorPago {
                 pago.setFechaPago(rs.getDate("fecha_pago"));
                 pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
                 pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
-                pago.setComprobante(rs.getString("comprobante"));
-                pago.setObservaciones(rs.getString("observaciones"));
                 pago.setNombreUsuario(rs.getString("nombre_usuario"));
                 pagos.add(pago);
             }
@@ -111,8 +109,6 @@ public class ControladorPago {
                 pago.setFechaPago(rs.getDate("fecha_pago"));
                 pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
                 pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
-                pago.setComprobante(rs.getString("comprobante"));
-                pago.setObservaciones(rs.getString("observaciones"));
                 pago.setNombreUsuario(rs.getString("nombre_usuario"));
                 return pago;
             }
@@ -133,8 +129,8 @@ public class ControladorPago {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return false;
             
-            String sql = "INSERT INTO pagos (id_usuario, tipo_servicio, monto, fecha_pago, estado, metodo_pago, comprobante, observaciones) " +
-                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO pagos (id_usuario, tipo_servicio, monto, fecha_pago, estado, metodo_pago) " +
+                         "VALUES (?, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, pago.getIdUsuario());
@@ -143,8 +139,6 @@ public class ControladorPago {
             pstmt.setDate(4, pago.getFechaPago());
             pstmt.setString(5, pago.getEstado().getValor());
             pstmt.setString(6, pago.getMetodoPago().getValor());
-            pstmt.setString(7, pago.getComprobante());
-            pstmt.setString(8, pago.getObservaciones());
             
             int filas = pstmt.executeUpdate();
             return filas > 0;
@@ -165,7 +159,7 @@ public class ControladorPago {
             if (conn == null) return false;
             
             String sql = "UPDATE pagos SET id_usuario = ?, tipo_servicio = ?, monto = ?, fecha_pago = ?, " +
-                         "estado = ?, metodo_pago = ?, comprobante = ?, observaciones = ? WHERE id_pago = ?";
+                         "estado = ?, metodo_pago = ? WHERE id_pago = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, pago.getIdUsuario());
@@ -174,9 +168,7 @@ public class ControladorPago {
             pstmt.setDate(4, pago.getFechaPago());
             pstmt.setString(5, pago.getEstado().getValor());
             pstmt.setString(6, pago.getMetodoPago().getValor());
-            pstmt.setString(7, pago.getComprobante());
-            pstmt.setString(8, pago.getObservaciones());
-            pstmt.setInt(9, pago.getIdPago());
+            pstmt.setInt(7, pago.getIdPago());
             
             int filas = pstmt.executeUpdate();
             return filas > 0;
@@ -184,6 +176,62 @@ public class ControladorPago {
             System.out.println("Error al actualizar pago: " + e.getMessage());
             return false;
         } finally {
+            cerrarRecursos(null, pstmt, conn);
+        }
+    }
+    
+    /**
+     * Marca un pago como pagado (cambia el estado de pendiente a pagado)
+     * 
+     * @param idPago ID del pago a marcar como pagado
+     * @return true si se actualizó correctamente, false en caso contrario
+     */
+    public boolean marcarComoPagado(int idPago) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        PreparedStatement pstmtVerificar = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = ConexionDB.obtenerConexion();
+            if (conn == null) return false;
+            
+            // Primero verificar que el pago existe y está en estado pendiente
+            String sqlVerificar = "SELECT estado FROM pagos WHERE id_pago = ?";
+            pstmtVerificar = conn.prepareStatement(sqlVerificar);
+            pstmtVerificar.setInt(1, idPago);
+            rs = pstmtVerificar.executeQuery();
+            
+            if (!rs.next()) {
+                return false; // El pago no existe
+            }
+            
+            String estadoActual = rs.getString("estado");
+            if (!"pendiente".equalsIgnoreCase(estadoActual)) {
+                return false; // El pago no está pendiente
+            }
+            
+            // Cerrar el ResultSet y PreparedStatement de verificación antes de continuar
+            rs.close();
+            pstmtVerificar.close();
+            
+            // Actualizar el estado a pagado
+            String sql = "UPDATE pagos SET estado = 'pagado' WHERE id_pago = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, idPago);
+            
+            int filas = pstmt.executeUpdate();
+            return filas > 0;
+        } catch (Exception e) {
+            System.out.println("Error al marcar pago como pagado: " + e.getMessage());
+            return false;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmtVerificar != null) pstmtVerificar.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerrar recursos de verificación: " + e.getMessage());
+            }
             cerrarRecursos(null, pstmt, conn);
         }
     }
@@ -222,8 +270,6 @@ public class ControladorPago {
             pago.setFechaPago(rs.getDate("fecha_pago"));
             pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
             pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
-            pago.setComprobante(rs.getString("comprobante"));
-            pago.setObservaciones(rs.getString("observaciones"));
             pago.setNombreUsuario(rs.getString("nombre_usuario"));
             lista.add(pago);
         }

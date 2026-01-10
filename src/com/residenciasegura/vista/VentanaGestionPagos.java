@@ -48,6 +48,8 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
             setTitle("Consulta de Pagos - Residencia Segura (Solo Lectura)");
             // Ocultar panel de formulario completamente para admin
             jPanel2.setVisible(false);
+            // Ocultar botón Pagar para admin
+            btnPagar.setVisible(false);
             // Cargar todos los pagos
             cargarDatos();
         } else {
@@ -64,6 +66,10 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
             comboEstado.setVisible(false);
             jLabel6.setVisible(false);
             // El estado siempre será pendiente al crear
+            // Mostrar botón Pagar solo para residentes
+            btnPagar.setVisible(true);
+            // Ocultar botón Limpiar para residentes
+            btnLimpiar.setVisible(false);
             // Cargar solo los pagos del residente
             cargarDatos();
         }
@@ -100,8 +106,6 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
     
     private void limpiarCampos() {
         txtMonto.setText("");
-        txtComprobante.setText("");
-        txtObservaciones.setText("");
         comboUsuario.setSelectedIndex(0);
         comboTipo.setSelectedIndex(0);
         comboEstado.setSelectedIndex(0);
@@ -135,9 +139,8 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtObservaciones = new javax.swing.JTextArea();
         btnCrear = new javax.swing.JButton();
-        btnActualizar = new javax.swing.JButton();
-        btnEliminar = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
+        btnPagar = new javax.swing.JButton();
         btnCerrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -198,14 +201,11 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
         btnCrear.setText("Crear");
         btnCrear.addActionListener(this::btnCrearActionPerformed);
 
-        btnActualizar.setText("Actualizar");
-        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
-
-        btnEliminar.setText("Eliminar");
-        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
-
         btnLimpiar.setText("Limpiar");
         btnLimpiar.addActionListener(this::btnLimpiarActionPerformed);
+
+        btnPagar.setText("Pagar");
+        btnPagar.addActionListener(this::btnPagarActionPerformed);
 
         btnCerrar.setText("Cerrar");
         btnCerrar.addActionListener(this::btnCerrarActionPerformed);
@@ -240,11 +240,9 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(btnCrear)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnActualizar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEliminar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnLimpiar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPagar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCerrar)))
                 .addContainerGap())
@@ -287,9 +285,8 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCrear)
-                    .addComponent(btnActualizar)
-                    .addComponent(btnEliminar)
                     .addComponent(btnLimpiar)
+                    .addComponent(btnPagar)
                     .addComponent(btnCerrar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -350,9 +347,7 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                                  "Monto: $" + pago.getMonto() + "\n" +
                                  "Fecha: " + pago.getFechaPago() + "\n" +
                                  "Estado: " + pago.getEstado().getValor() + "\n" +
-                                 "Método: " + pago.getMetodoPago().getValor() + "\n" +
-                                 "Comprobante: " + (pago.getComprobante() != null ? pago.getComprobante() : "N/A") + "\n" +
-                                 "Observaciones: " + (pago.getObservaciones() != null ? pago.getObservaciones() : "N/A");
+                                 "Método: " + pago.getMetodoPago().getValor();
                     JOptionPane.showMessageDialog(this, info, "Detalles del Pago", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     // Si es residente, puede editar solo sus propios pagos
@@ -360,8 +355,6 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
                         // Llenar campos con los datos del pago seleccionado
                         txtMonto.setText(pago.getMonto().toString());
                         txtFecha.setText(pago.getFechaPago().toString());
-                        txtComprobante.setText(pago.getComprobante() != null ? pago.getComprobante() : "");
-                        txtObservaciones.setText(pago.getObservaciones() != null ? pago.getObservaciones() : "");
                         comboTipo.setSelectedItem(pago.getTipoServicio().getValor());
                         comboEstado.setSelectedItem(pago.getEstado().getValor());
                         comboMetodo.setSelectedItem(pago.getMetodoPago().getValor());
@@ -391,8 +384,6 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
             pago.setFechaPago(Date.valueOf(txtFecha.getText()));
             pago.setEstado(Pago.EstadoPago.PENDIENTE); // Por defecto pendiente
             pago.setMetodoPago(Pago.MetodoPago.fromString(comboMetodo.getSelectedItem().toString()));
-            pago.setComprobante(txtComprobante.getText().trim().isEmpty() ? null : txtComprobante.getText());
-            pago.setObservaciones(txtObservaciones.getText().trim().isEmpty() ? null : txtObservaciones.getText());
             
             if (controladorPago.crearPago(pago)) {
                 cargarDatos();
@@ -405,59 +396,12 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 
-    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
-            return;
-        }
-        
-        int fila = tablaPagos.getSelectedRow();
-        if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un pago", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            int idPago = (Integer) modeloTabla.getValueAt(fila, 0);
-            Pago pago = controladorPago.obtenerPorId(idPago);
-            
-            if (pago != null) {
-                // Verificar que el pago pertenezca al usuario actual
-                if (pago.getIdUsuario() != usuarioActual.getIdUsuario()) {
-                    JOptionPane.showMessageDialog(this, "Solo puede actualizar sus propios pagos", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                // Validar campos
-                if (txtMonto.getText().trim().isEmpty() || txtFecha.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                pago.setIdUsuario(usuarioActual.getIdUsuario()); // Mantener el mismo usuario
-                pago.setTipoServicio(Pago.TipoServicio.fromString(comboTipo.getSelectedItem().toString()));
-                pago.setMonto(new BigDecimal(txtMonto.getText()));
-                pago.setFechaPago(Date.valueOf(txtFecha.getText()));
-                // El residente puede cambiar el estado solo si está pendiente
-                if (pago.getEstado() == Pago.EstadoPago.PENDIENTE) {
-                    pago.setEstado(Pago.EstadoPago.fromString(comboEstado.getSelectedItem().toString()));
-                }
-                pago.setMetodoPago(Pago.MetodoPago.fromString(comboMetodo.getSelectedItem().toString()));
-                pago.setComprobante(txtComprobante.getText().trim().isEmpty() ? null : txtComprobante.getText());
-                pago.setObservaciones(txtObservaciones.getText().trim().isEmpty() ? null : txtObservaciones.getText());
-                
-                    if (controladorPago.actualizarPago(pago)) {
-                        cargarDatos();
-                        limpiarCampos();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Error al actualizar", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-    }//GEN-LAST:event_btnActualizarActionPerformed
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        limpiarCampos();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
 
-    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+    private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
+        // Solo residentes pueden pagar
         if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
             return;
         }
@@ -475,46 +419,38 @@ public class VentanaGestionPagos extends javax.swing.JFrame {
             if (pago != null) {
                 // Verificar que el pago pertenezca al usuario actual
                 if (pago.getIdUsuario() != usuarioActual.getIdUsuario()) {
-                    JOptionPane.showMessageDialog(this, "Solo puede eliminar sus propios pagos", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Solo puede pagar sus propios servicios", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
-                // Solo se pueden eliminar pagos pendientes
+                // Verificar que el pago esté pendiente
                 if (pago.getEstado() != Pago.EstadoPago.PENDIENTE) {
-                    JOptionPane.showMessageDialog(this, "Solo se pueden eliminar pagos pendientes", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Solo se pueden pagar servicios pendientes", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
-                int respuesta = JOptionPane.showConfirmDialog(this, "¿Eliminar pago?", "Confirmar", JOptionPane.YES_NO_OPTION);
-                
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    if (controladorPago.eliminarPago(idPago)) {
-                        cargarDatos();
-                        limpiarCampos();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                // Marcar como pagado
+                if (controladorPago.marcarComoPagado(idPago)) {
+                    cargarDatos();
+                    limpiarCampos();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al procesar el pago", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnEliminarActionPerformed
-
-    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        limpiarCampos();
-    }//GEN-LAST:event_btnLimpiarActionPerformed
+    }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCerrarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnCerrar;
     private javax.swing.JButton btnCrear;
-    private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLimpiar;
+    private javax.swing.JButton btnPagar;
     private javax.swing.JComboBox<String> comboEstado;
     private javax.swing.JComboBox<String> comboMetodo;
     private javax.swing.JComboBox<String> comboTipo;

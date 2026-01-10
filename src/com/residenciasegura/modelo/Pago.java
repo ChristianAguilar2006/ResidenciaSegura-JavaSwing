@@ -17,8 +17,6 @@ public class Pago {
     private Date fechaPago;
     private EstadoPago estado;
     private MetodoPago metodoPago;
-    private String comprobante;
-    private String observaciones;
     
     // Usuario asociado (para mostrar nombre)
     private String nombreUsuario;
@@ -181,22 +179,6 @@ public class Pago {
     
     public void setMetodoPago(MetodoPago metodoPago) {
         this.metodoPago = metodoPago;
-    }
-    
-    public String getComprobante() {
-        return comprobante;
-    }
-    
-    public void setComprobante(String comprobante) {
-        this.comprobante = comprobante;
-    }
-    
-    public String getObservaciones() {
-        return observaciones;
-    }
-    
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
     }
     
     public String getNombreUsuario() {

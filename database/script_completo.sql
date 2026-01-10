@@ -36,8 +36,6 @@ CREATE TABLE pagos (
     fecha_pago DATE NOT NULL,
     estado ENUM('pendiente', 'pagado', 'rechazado') NOT NULL,
     metodo_pago ENUM('efectivo', 'transferencia', 'tarjeta') NOT NULL,
-    comprobante VARCHAR(255),
-    observaciones TEXT,
 
     CONSTRAINT fk_pagos_usuario
         FOREIGN KEY (id_usuario)
