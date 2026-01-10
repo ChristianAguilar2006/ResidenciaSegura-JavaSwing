@@ -50,7 +50,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>com.residenciasegura.vista.VentanaLogin</mainClass>
+                    <mainClass>com.residenciasegura.AppConsola</mainClass>
                 </configuration>
             </plugin>
             
@@ -68,7 +68,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.residenciasegura.vista.VentanaLogin</mainClass>
+                                    <mainClass>com.residenciasegura.AppConsola</mainClass>
                                 </transformer>
                             </transformers>
                             <finalName>ResidenciaSegura</finalName>

@@ -2,11 +2,6 @@ package com.residenciasegura.modelo;
 
 import java.sql.Timestamp;
 
-/**
- * Clase modelo que representa un usuario en el sistema
- * 
- * @author DARIX
- */
 public class Usuario {
     
     private int idUsuario;
@@ -18,15 +13,11 @@ public class Usuario {
     private String telefono;
     private Timestamp fechaRegistro;
     
-    /**
-     * Enum simple para los roles del sistema
-     */
     public enum Rol {
-        ADMIN,      // Administrador
-        RESIDENTE,  // Residente
-        GUARDIA;    // Guardia
+        ADMIN,
+        RESIDENTE,
+        GUARDIA;
         
-        // Método para convertir String a Rol
         public static Rol fromString(String valor) {
             if (valor == null) return null;
             
@@ -41,7 +32,6 @@ public class Usuario {
             return null;
         }
         
-        // Método para convertir Rol a String
         public String getValor() {
             if (this == ADMIN) return "admin";
             if (this == RESIDENTE) return "residente";
@@ -50,7 +40,6 @@ public class Usuario {
         }
     }
     
-    // Constructores
     public Usuario() {
     }
     
@@ -62,7 +51,6 @@ public class Usuario {
         this.departamento = departamento;
     }
     
-    // Getters y Setters
     public int getIdUsuario() {
         return idUsuario;
     }

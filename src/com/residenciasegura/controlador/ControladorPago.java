@@ -8,11 +8,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador para la lógica de pagos (sin DAO, consultas directas)
- * 
- * @author DARIX
- */
 public class ControladorPago {
     
     public List<Pago> obtenerTodos() {
@@ -180,12 +175,6 @@ public class ControladorPago {
         }
     }
     
-    /**
-     * Marca un pago como pagado (cambia el estado de pendiente a pagado)
-     * 
-     * @param idPago ID del pago a marcar como pagado
-     * @return true si se actualizó correctamente, false en caso contrario
-     */
     public boolean marcarComoPagado(int idPago) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -196,26 +185,23 @@ public class ControladorPago {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return false;
             
-            // Primero verificar que el pago existe y está en estado pendiente
             String sqlVerificar = "SELECT estado FROM pagos WHERE id_pago = ?";
             pstmtVerificar = conn.prepareStatement(sqlVerificar);
             pstmtVerificar.setInt(1, idPago);
             rs = pstmtVerificar.executeQuery();
             
             if (!rs.next()) {
-                return false; // El pago no existe
+                return false;
             }
             
             String estadoActual = rs.getString("estado");
             if (!"pendiente".equalsIgnoreCase(estadoActual)) {
-                return false; // El pago no está pendiente
+                return false;
             }
             
-            // Cerrar el ResultSet y PreparedStatement de verificación antes de continuar
             rs.close();
             pstmtVerificar.close();
             
-            // Actualizar el estado a pagado
             String sql = "UPDATE pagos SET estado = 'pagado' WHERE id_pago = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, idPago);

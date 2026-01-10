@@ -1,0 +1,248 @@
+package com.residenciasegura.menu.impl;
+
+import com.residenciasegura.controlador.ControladorAviso;
+import com.residenciasegura.controlador.ControladorPago;
+import com.residenciasegura.controlador.ControladorReporte;
+import com.residenciasegura.menu.MenuResidente;
+import com.residenciasegura.modelo.Aviso;
+import com.residenciasegura.modelo.Pago;
+import com.residenciasegura.modelo.Reporte;
+import com.residenciasegura.modelo.Usuario;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.List;
+import java.util.Scanner;
+
+public class MenuResidenteImpl implements MenuResidente {
+    
+    private final Scanner scanner = new Scanner(System.in);
+    private final Usuario usuarioActual;
+    private final ControladorPago controladorPago;
+    private final ControladorReporte controladorReporte;
+    private final ControladorAviso controladorAviso;
+    
+    public MenuResidenteImpl(Usuario usuario) {
+        this.usuarioActual = usuario;
+        this.controladorPago = new ControladorPago();
+        this.controladorReporte = new ControladorReporte();
+        this.controladorAviso = new ControladorAviso();
+    }
+    
+    @Override
+    public boolean mostrarMenu() {
+        System.out.println("\n=== MENÚ RESIDENTE ===");
+        System.out.println("1. Pagar Servicios");
+        System.out.println("2. Crear Reporte");
+        System.out.println("3. Ver Avisos");
+        System.out.println("4. Cerrar Sesión");
+        System.out.print("\nSeleccione una opción: ");
+        
+        int opcion = leerEntero();
+        
+        switch (opcion) {
+            case 1:
+                pagarServicios();
+                return true;
+            case 2:
+                crearReporte();
+                return true;
+            case 3:
+                verAvisos();
+                return true;
+            case 4:
+                return false;
+            default:
+                System.out.println("Opción inválida");
+                return true;
+        }
+    }
+    
+    private void pagarServicios() {
+        boolean continuar = true;
+        while (continuar) {
+            System.out.println("\n=== PAGAR SERVICIOS ===");
+            System.out.println("1. Ver Mis Pagos");
+            System.out.println("2. Crear Nuevo Pago");
+            System.out.println("3. Pagar Servicio");
+            System.out.println("4. Volver");
+            System.out.print("\nSeleccione una opción: ");
+            
+            int opcion = leerEntero();
+            
+            switch (opcion) {
+                case 1:
+                    verMisPagos();
+                    break;
+                case 2:
+                    crearPago();
+                    break;
+                case 3:
+                    pagarServicio();
+                    break;
+                case 4:
+                    continuar = false;
+                    break;
+                default:
+                    System.out.println("Opción inválida");
+            }
+        }
+    }
+    
+    private void verMisPagos() {
+        System.out.println("\n=== MIS PAGOS ===");
+        List<Pago> pagos = controladorPago.obtenerPorUsuario(usuarioActual.getIdUsuario());
+        
+        if (pagos.isEmpty()) {
+            System.out.println("No tiene pagos registrados");
+            return;
+        }
+        
+        System.out.printf("%-5s %-15s %-12s %-12s %-12s %-15s%n",
+            "ID", "Tipo", "Monto", "Fecha", "Estado", "Método");
+        System.out.println("----------------------------------------------------------------------------------------");
+        
+        for (Pago p : pagos) {
+            System.out.printf("%-5d %-15s $%-11.2f %-12s %-12s %-15s%n",
+                p.getIdPago(), p.getTipoServicio().getValor(), p.getMonto(),
+                p.getFechaPago(), p.getEstado().getValor(), p.getMetodoPago().getValor());
+        }
+    }
+    
+    private void crearPago() {
+        System.out.println("\n=== CREAR NUEVO PAGO ===");
+        System.out.print("Tipo de servicio (alicuota/agua/luz/internet/mantenimiento/otro): ");
+        String tipoStr = scanner.nextLine().toLowerCase();
+        Pago.TipoServicio tipo = Pago.TipoServicio.fromString(tipoStr);
+        
+        System.out.print("Monto: ");
+        BigDecimal monto = leerBigDecimal();
+        
+        System.out.print("Fecha (YYYY-MM-DD): ");
+        String fechaStr = scanner.nextLine();
+        Date fecha = Date.valueOf(fechaStr);
+        
+        System.out.print("Método de pago (efectivo/transferencia/tarjeta): ");
+        String metodoStr = scanner.nextLine().toLowerCase();
+        Pago.MetodoPago metodo = Pago.MetodoPago.fromString(metodoStr);
+        
+        Pago pago = new Pago();
+        pago.setIdUsuario(usuarioActual.getIdUsuario());
+        pago.setTipoServicio(tipo);
+        pago.setMonto(monto);
+        pago.setFechaPago(fecha);
+        pago.setEstado(Pago.EstadoPago.PENDIENTE);
+        pago.setMetodoPago(metodo);
+        
+        if (controladorPago.crearPago(pago)) {
+            System.out.println("✓ Pago creado exitosamente");
+        } else {
+            System.out.println("✗ Error al crear pago");
+        }
+    }
+    
+    private void pagarServicio() {
+        System.out.println("\n=== PAGAR SERVICIO ===");
+        verMisPagos();
+        
+        System.out.print("\nID del pago a pagar: ");
+        int idPago = leerEntero();
+        
+        Pago pago = controladorPago.obtenerPorId(idPago);
+        if (pago == null) {
+            System.out.println("✗ Pago no encontrado");
+            return;
+        }
+        
+        if (pago.getIdUsuario() != usuarioActual.getIdUsuario()) {
+            System.out.println("✗ Solo puede pagar sus propios servicios");
+            return;
+        }
+        
+        if (pago.getEstado() != Pago.EstadoPago.PENDIENTE) {
+            System.out.println("✗ Solo se pueden pagar servicios pendientes");
+            return;
+        }
+        
+        if (controladorPago.marcarComoPagado(idPago)) {
+            System.out.println("✓ Servicio pagado exitosamente");
+        } else {
+            System.out.println("✗ Error al procesar el pago");
+        }
+    }
+    
+    private void crearReporte() {
+        System.out.println("\n=== CREAR REPORTE ===");
+        System.out.print("Tipo (mantenimiento/seguridad/limpieza/otro): ");
+        String tipoStr = scanner.nextLine().toLowerCase();
+        Reporte.TipoReporte tipo = Reporte.TipoReporte.fromString(tipoStr);
+        
+        System.out.print("Ubicación: ");
+        String ubicacion = scanner.nextLine();
+        
+        System.out.print("Descripción: ");
+        String descripcion = scanner.nextLine();
+        
+        System.out.print("Prioridad (baja/media/alta): ");
+        String prioridadStr = scanner.nextLine().toLowerCase();
+        Reporte.Prioridad prioridad = Reporte.Prioridad.fromString(prioridadStr);
+        
+        Reporte reporte = new Reporte();
+        reporte.setIdUsuario(usuarioActual.getIdUsuario());
+        reporte.setTipo(tipo);
+        reporte.setUbicacion(ubicacion);
+        reporte.setDescripcion(descripcion);
+        reporte.setPrioridad(prioridad);
+        reporte.setEstado(Reporte.EstadoReporte.PENDIENTE);
+        
+        if (controladorReporte.crearReporte(reporte)) {
+            System.out.println("✓ Reporte creado exitosamente");
+        } else {
+            System.out.println("✗ Error al crear reporte");
+        }
+    }
+    
+    private void verAvisos() {
+        System.out.println("\n=== AVISOS ===");
+        List<Aviso> avisos = controladorAviso.obtenerActivos();
+        
+        if (avisos.isEmpty()) {
+            System.out.println("No hay avisos disponibles");
+            return;
+        }
+        
+        for (Aviso a : avisos) {
+            System.out.println("\n--- " + a.getTitulo() + " ---");
+            System.out.println("Tipo: " + a.getTipo().getValor());
+            System.out.println("Mensaje: " + a.getMensaje());
+            if (a.getFechaPublicacion() != null) {
+                System.out.println("Fecha: " + a.getFechaPublicacion());
+            }
+        }
+        
+        System.out.print("\nPresione Enter para continuar...");
+        scanner.nextLine();
+    }
+    
+    private int leerEntero() {
+        while (true) {
+            try {
+                String input = scanner.nextLine();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Por favor ingrese un número válido: ");
+            }
+        }
+    }
+    
+    private BigDecimal leerBigDecimal() {
+        while (true) {
+            try {
+                String input = scanner.nextLine();
+                return new BigDecimal(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Por favor ingrese un monto válido: ");
+            }
+        }
+    }
+}
+

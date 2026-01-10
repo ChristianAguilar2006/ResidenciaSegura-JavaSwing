@@ -2,11 +2,6 @@ package com.residenciasegura.modelo;
 
 import java.sql.Timestamp;
 
-/**
- * Clase modelo que representa un reporte en el sistema
- * 
- * @author DARIX
- */
 public class Reporte {
     
     private int idReporte;
@@ -20,13 +15,9 @@ public class Reporte {
     private Integer idGuardiaAtendio;
     private Timestamp fechaResolucion;
     
-    // Datos adicionales para mostrar
     private String nombreUsuario;
     private String nombreGuardia;
     
-    /**
-     * Enum para los tipos de reporte
-     */
     public enum TipoReporte {
         SEGURIDAD("seguridad"),
         MANTENIMIENTO("mantenimiento"),
@@ -55,9 +46,6 @@ public class Reporte {
         }
     }
     
-    /**
-     * Enum para los estados del reporte
-     */
     public enum EstadoReporte {
         PENDIENTE("pendiente"),
         EN_PROCESO("en_proceso"),
@@ -85,9 +73,6 @@ public class Reporte {
         }
     }
     
-    /**
-     * Enum para las prioridades
-     */
     public enum Prioridad {
         BAJA("baja"),
         MEDIA("media"),
@@ -115,7 +100,6 @@ public class Reporte {
         }
     }
     
-    // Constructores
     public Reporte() {
     }
     
@@ -128,7 +112,6 @@ public class Reporte {
         this.prioridad = prioridad;
     }
     
-    // Getters y Setters
     public int getIdReporte() {
         return idReporte;
     }

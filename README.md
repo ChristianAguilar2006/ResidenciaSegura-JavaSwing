@@ -1,6 +1,6 @@
 # Sistema de Gestión Residencial - Residencia Segura
 
-Sistema de gestión residencial desarrollado en Java Swing con MySQL para la administración de usuarios, pagos, reportes y avisos.
+Sistema de gestión residencial desarrollado en Java (aplicación de consola) con MySQL para la administración de usuarios, pagos, reportes y avisos.
 
 ## Estructura del Proyecto
 
@@ -9,11 +9,12 @@ El proyecto está organizado siguiendo el patrón de arquitectura en capas:
 ```
 src/com/residenciasegura/
 ├── modelo/          # Entidades del dominio (Usuario, Pago, Reporte, Aviso)
-├── dao/            # Interfaces y implementaciones de acceso a datos
 ├── util/           # Utilidades (Conexión DB, etc.)
-├── vista/          # Interfaces gráficas (Ventanas Swing)
-└── controlador/    # Lógica de negocio y controladores
+├── controlador/    # Lógica de negocio y controladores
+└── AppConsola.java # Aplicación principal de consola
 ```
+
+**NOTA:** Este proyecto funciona completamente en consola. No utiliza interfaces gráficas Swing.
 
 ## Requisitos Previos
 
@@ -42,7 +43,7 @@ src/com/residenciasegura/
    - NetBeans descargará automáticamente el driver de MySQL desde Maven
    - Si no se descarga automáticamente: Click derecho en el proyecto → Dependencies → Download Declared Dependencies
 4. **Ejecuta el Proyecto:**
-   - Click derecho en `VentanaLogin.java` → Run File
+   - Click derecho en `AppConsola.java` → Run File
    - O presiona `Shift + F6`
 
 **¡El driver de MySQL ya viene incluido en el `pom.xml`!** No necesitas descargarlo manualmente.
@@ -59,11 +60,8 @@ src/com/residenciasegura/
 ### Utilidades (`com.residenciasegura.util`)
 - **ConexionDB.java**: Clase singleton para gestionar la conexión a MySQL
 
-### Vista (`com.residenciasegura.vista`)
-- **VentanaLogin.java**: Ventana de inicio de sesión
-- **DashboardAdmin.java**: Panel de administración
-- **DashboardResidente.java**: Panel del residente
-- **DashboardGuardia.java**: Panel del guardia
+### Aplicación Principal
+- **AppConsola.java**: Aplicación de consola con menús interactivos para todos los roles
 
 ### Controlador (`com.residenciasegura.controlador`)
 - **ControladorLogin.java**: Controlador para la lógica de autenticación
@@ -101,15 +99,28 @@ src/com/residenciasegura/
 
 ## Ejecución
 
+### Desde NetBeans:
 1. Asegúrate de que MySQL esté corriendo
-2. Ejecuta la clase principal `VentanaLogin` desde NetBeans
+2. Ejecuta la clase principal `AppConsola` desde NetBeans
 3. Inicia sesión con las credenciales de un usuario registrado en la base de datos
+
+### Desde línea de comandos:
+```bash
+mvn exec:java
+```
+
+O compilar y ejecutar:
+```bash
+mvn clean compile
+java -cp "target/classes;target/dependency/*" com.residenciasegura.AppConsola
+```
 
 ## Notas Importantes
 
 - La contraseña se almacena en texto plano (se recomienda implementar hash en producción)
-- Ajusta las credenciales de conexión según tu configuración de MySQL
-- El proyecto utiliza el patrón DAO para separar la lógica de acceso a datos
+- Ajusta las credenciales de conexión según tu configuración de MySQL en `ConexionDB.java`
+- El proyecto funciona completamente desde consola con menús interactivos
+- No utiliza interfaces gráficas Swing (carpeta vista eliminada)
 
 ## Autor
 

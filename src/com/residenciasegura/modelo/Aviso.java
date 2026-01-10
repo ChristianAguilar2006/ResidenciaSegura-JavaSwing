@@ -2,11 +2,6 @@ package com.residenciasegura.modelo;
 
 import java.sql.Timestamp;
 
-/**
- * Clase modelo que representa un aviso en el sistema
- * 
- * @author DARIX
- */
 public class Aviso {
     
     private int idAviso;
@@ -17,12 +12,8 @@ public class Aviso {
     private Timestamp fechaPublicacion;
     private boolean activo;
     
-    // Dato adicional para mostrar
     private String nombreAdministrador;
     
-    /**
-     * Enum para los tipos de aviso
-     */
     public enum TipoAviso {
         INFORMATIVO("informativo"),
         ALERTA("alerta"),
@@ -50,7 +41,6 @@ public class Aviso {
         }
     }
     
-    // Constructores
     public Aviso() {
     }
     
@@ -62,7 +52,6 @@ public class Aviso {
         this.activo = true;
     }
     
-    // Getters y Setters
     public int getIdAviso() {
         return idAviso;
     }

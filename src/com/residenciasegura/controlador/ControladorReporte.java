@@ -9,11 +9,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador para la lógica de reportes (sin DAO, consultas directas)
- * 
- * @author DARIX
- */
 public class ControladorReporte {
     
     public List<Reporte> obtenerTodos() {
@@ -26,7 +21,6 @@ public class ControladorReporte {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return reportes;
             
-            // Consulta simple: primero obtenemos los reportes
             String sql = "SELECT * FROM reportes ORDER BY fecha_reporte DESC";
             
             pstmt = conn.prepareStatement(sql);
@@ -55,7 +49,6 @@ public class ControladorReporte {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return reportes;
             
-            // Consulta simple: reportes de un usuario específico
             String sql = "SELECT * FROM reportes WHERE id_usuario = ? ORDER BY fecha_reporte DESC";
             
             pstmt = conn.prepareStatement(sql);
@@ -85,7 +78,6 @@ public class ControladorReporte {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return reportes;
             
-            // Consulta simple: reportes por estado
             String sql = "SELECT * FROM reportes WHERE estado = ? ORDER BY fecha_reporte DESC";
             
             pstmt = conn.prepareStatement(sql);
@@ -105,6 +97,34 @@ public class ControladorReporte {
         return reportes;
     }
     
+    public List<Reporte> obtenerPendientes() {
+        List<Reporte> reportes = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = ConexionDB.obtenerConexion();
+            if (conn == null) return reportes;
+            
+            String sql = "SELECT * FROM reportes WHERE estado = 'pendiente' ORDER BY fecha_reporte DESC";
+            
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                Reporte reporte = mapearReporte(rs);
+                reportes.add(reporte);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener reportes pendientes: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, pstmt, conn);
+        }
+        
+        return reportes;
+    }
+    
     public Reporte obtenerPorId(int idReporte) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -114,7 +134,6 @@ public class ControladorReporte {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return null;
             
-            // Consulta simple: un reporte por su ID
             String sql = "SELECT * FROM reportes WHERE id_reporte = ?";
             
             pstmt = conn.prepareStatement(sql);
@@ -275,7 +294,6 @@ public class ControladorReporte {
     private Reporte mapearReporte(ResultSet rs) throws Exception {
         Reporte reporte = new Reporte();
         
-        // Datos básicos del reporte (de la tabla reportes)
         reporte.setIdReporte(rs.getInt("id_reporte"));
         reporte.setIdUsuario(rs.getInt("id_usuario"));
         reporte.setTipo(Reporte.TipoReporte.fromString(rs.getString("tipo")));
@@ -285,27 +303,22 @@ public class ControladorReporte {
         reporte.setEstado(Reporte.EstadoReporte.fromString(rs.getString("estado")));
         reporte.setPrioridad(Reporte.Prioridad.fromString(rs.getString("prioridad")));
         
-        // Guardia (puede ser null)
         int idGuardia = rs.getInt("id_guardia_atendio");
         if (!rs.wasNull()) {
             reporte.setIdGuardiaAtendio(idGuardia);
-            // Obtener nombre del guardia si existe
             reporte.setNombreGuardia(obtenerNombreUsuario(idGuardia));
         }
         
-        // Fecha de resolución (puede ser null)
         Timestamp fechaResolucion = rs.getTimestamp("fecha_resolucion");
         if (!rs.wasNull()) {
             reporte.setFechaResolucion(fechaResolucion);
         }
         
-        // Obtener nombre del usuario que creó el reporte
         reporte.setNombreUsuario(obtenerNombreUsuario(reporte.getIdUsuario()));
         
         return reporte;
     }
     
-    // Método simple para obtener el nombre de un usuario por su ID
     private String obtenerNombreUsuario(int idUsuario) {
         Connection conn = null;
         PreparedStatement pstmt = null;

@@ -3,11 +3,6 @@ package com.residenciasegura.modelo;
 import java.math.BigDecimal;
 import java.sql.Date;
 
-/**
- * Clase modelo que representa un pago en el sistema
- * 
- * @author DARIX
- */
 public class Pago {
     
     private int idPago;
@@ -18,12 +13,8 @@ public class Pago {
     private EstadoPago estado;
     private MetodoPago metodoPago;
     
-    // Usuario asociado (para mostrar nombre)
     private String nombreUsuario;
     
-    /**
-     * Enum para los tipos de servicio
-     */
     public enum TipoServicio {
         ALICUOTA("alicuota"),
         AGUA("agua"),
@@ -53,9 +44,6 @@ public class Pago {
         }
     }
     
-    /**
-     * Enum para los estados del pago
-     */
     public enum EstadoPago {
         PENDIENTE("pendiente"),
         PAGADO("pagado"),
@@ -82,9 +70,6 @@ public class Pago {
         }
     }
     
-    /**
-     * Enum para los métodos de pago
-     */
     public enum MetodoPago {
         EFECTIVO("efectivo"),
         TRANSFERENCIA("transferencia"),
@@ -111,7 +96,6 @@ public class Pago {
         }
     }
     
-    // Constructores
     public Pago() {
     }
     
@@ -124,7 +108,6 @@ public class Pago {
         this.metodoPago = metodoPago;
     }
     
-    // Getters y Setters
     public int getIdPago() {
         return idPago;
     }

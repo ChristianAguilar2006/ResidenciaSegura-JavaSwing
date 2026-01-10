@@ -8,11 +8,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador para la lógica de usuarios (sin DAO, consultas directas)
- * 
- * @author DARIX
- */
 public class ControladorUsuario {
     
     public Usuario obtenerPorId(int idUsuario) {

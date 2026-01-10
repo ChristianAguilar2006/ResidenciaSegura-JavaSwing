@@ -8,11 +8,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador para la lógica de avisos (sin DAO, consultas directas)
- * 
- * @author DARIX
- */
 public class ControladorAviso {
     
     public List<Aviso> obtenerTodos() {
