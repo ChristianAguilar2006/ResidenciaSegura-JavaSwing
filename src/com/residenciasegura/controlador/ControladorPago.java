@@ -20,14 +20,13 @@ public class ControladorPago {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return pagos;
             
-            String sql = "SELECT p.*, u.nombre as nombre_usuario FROM pagos p " +
-                         "INNER JOIN usuarios u ON p.id_usuario = u.id_usuario " +
-                         "ORDER BY p.fecha_pago DESC";
+            String sql = "SELECT * FROM pagos ORDER BY fecha_pago DESC";
             
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             
-            for (Pago pago : procesarResultSet(rs)) {
+            while (rs.next()) {
+                Pago pago = mapearPago(rs);
                 pagos.add(pago);
             }
         } catch (Exception e) {
@@ -49,24 +48,14 @@ public class ControladorPago {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return pagos;
             
-            String sql = "SELECT p.*, u.nombre as nombre_usuario FROM pagos p " +
-                         "INNER JOIN usuarios u ON p.id_usuario = u.id_usuario " +
-                         "WHERE p.id_usuario = ? ORDER BY p.fecha_pago DESC";
+            String sql = "SELECT * FROM pagos WHERE id_usuario = ? ORDER BY fecha_pago DESC";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, idUsuario);
             rs = pstmt.executeQuery();
             
             while (rs.next()) {
-                Pago pago = new Pago();
-                pago.setIdPago(rs.getInt("id_pago"));
-                pago.setIdUsuario(rs.getInt("id_usuario"));
-                pago.setTipoServicio(Pago.TipoServicio.fromString(rs.getString("tipo_servicio")));
-                pago.setMonto(rs.getBigDecimal("monto"));
-                pago.setFechaPago(rs.getDate("fecha_pago"));
-                pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
-                pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
-                pago.setNombreUsuario(rs.getString("nombre_usuario"));
+                Pago pago = mapearPago(rs);
                 pagos.add(pago);
             }
         } catch (Exception e) {
@@ -87,25 +76,14 @@ public class ControladorPago {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return null;
             
-            String sql = "SELECT p.*, u.nombre as nombre_usuario FROM pagos p " +
-                         "INNER JOIN usuarios u ON p.id_usuario = u.id_usuario " +
-                         "WHERE p.id_pago = ?";
+            String sql = "SELECT * FROM pagos WHERE id_pago = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, idPago);
             rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                Pago pago = new Pago();
-                pago.setIdPago(rs.getInt("id_pago"));
-                pago.setIdUsuario(rs.getInt("id_usuario"));
-                pago.setTipoServicio(Pago.TipoServicio.fromString(rs.getString("tipo_servicio")));
-                pago.setMonto(rs.getBigDecimal("monto"));
-                pago.setFechaPago(rs.getDate("fecha_pago"));
-                pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
-                pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
-                pago.setNombreUsuario(rs.getString("nombre_usuario"));
-                return pago;
+                return mapearPago(rs);
             }
         } catch (Exception e) {
             System.out.println("Error al obtener pago por ID: " + e.getMessage());
@@ -245,21 +223,43 @@ public class ControladorPago {
         }
     }
     
-    private List<Pago> procesarResultSet(ResultSet rs) throws Exception {
-        List<Pago> lista = new ArrayList<>();
-        while (rs.next()) {
-            Pago pago = new Pago();
-            pago.setIdPago(rs.getInt("id_pago"));
-            pago.setIdUsuario(rs.getInt("id_usuario"));
-            pago.setTipoServicio(Pago.TipoServicio.fromString(rs.getString("tipo_servicio")));
-            pago.setMonto(rs.getBigDecimal("monto"));
-            pago.setFechaPago(rs.getDate("fecha_pago"));
-            pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
-            pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
-            pago.setNombreUsuario(rs.getString("nombre_usuario"));
-            lista.add(pago);
+    private Pago mapearPago(ResultSet rs) throws Exception {
+        Pago pago = new Pago();
+        pago.setIdPago(rs.getInt("id_pago"));
+        pago.setIdUsuario(rs.getInt("id_usuario"));
+        pago.setTipoServicio(Pago.TipoServicio.fromString(rs.getString("tipo_servicio")));
+        pago.setMonto(rs.getBigDecimal("monto"));
+        pago.setFechaPago(rs.getDate("fecha_pago"));
+        pago.setEstado(Pago.EstadoPago.fromString(rs.getString("estado")));
+        pago.setMetodoPago(Pago.MetodoPago.fromString(rs.getString("metodo_pago")));
+        pago.setNombreUsuario(obtenerNombreUsuario(pago.getIdUsuario()));
+        return pago;
+    }
+    
+    private String obtenerNombreUsuario(int idUsuario) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = ConexionDB.obtenerConexion();
+            if (conn == null) return null;
+            
+            String sql = "SELECT nombre FROM usuarios WHERE id_usuario = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, idUsuario);
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getString("nombre");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener nombre de usuario: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, pstmt, conn);
         }
-        return lista;
+        
+        return null;
     }
     
     private void cerrarRecursos(ResultSet rs, PreparedStatement pstmt, Connection conn) {

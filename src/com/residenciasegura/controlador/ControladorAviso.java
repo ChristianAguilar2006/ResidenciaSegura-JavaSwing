@@ -20,14 +20,13 @@ public class ControladorAviso {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return avisos;
             
-            String sql = "SELECT a.*, u.nombre as nombre_administrador FROM avisos a " +
-                         "INNER JOIN usuarios u ON a.id_administrador = u.id_usuario " +
-                         "ORDER BY a.fecha_publicacion DESC";
+            String sql = "SELECT * FROM avisos ORDER BY fecha_publicacion DESC";
             
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             
-            for (Aviso aviso : procesarResultSet(rs)) {
+            while (rs.next()) {
+                Aviso aviso = mapearAviso(rs);
                 avisos.add(aviso);
             }
         } catch (Exception e) {
@@ -49,14 +48,13 @@ public class ControladorAviso {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return avisos;
             
-            String sql = "SELECT a.*, u.nombre as nombre_administrador FROM avisos a " +
-                         "INNER JOIN usuarios u ON a.id_administrador = u.id_usuario " +
-                         "WHERE a.activo = TRUE ORDER BY a.fecha_publicacion DESC";
+            String sql = "SELECT * FROM avisos WHERE activo = TRUE ORDER BY fecha_publicacion DESC";
             
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             
-            for (Aviso aviso : procesarResultSet(rs)) {
+            while (rs.next()) {
+                Aviso aviso = mapearAviso(rs);
                 avisos.add(aviso);
             }
         } catch (Exception e) {
@@ -77,9 +75,7 @@ public class ControladorAviso {
             conn = ConexionDB.obtenerConexion();
             if (conn == null) return null;
             
-            String sql = "SELECT a.*, u.nombre as nombre_administrador FROM avisos a " +
-                         "INNER JOIN usuarios u ON a.id_administrador = u.id_usuario " +
-                         "WHERE a.id_aviso = ?";
+            String sql = "SELECT * FROM avisos WHERE id_aviso = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, idAviso);
@@ -222,15 +218,6 @@ public class ControladorAviso {
         return false;
     }
     
-    private List<Aviso> procesarResultSet(ResultSet rs) throws Exception {
-        List<Aviso> lista = new ArrayList<>();
-        while (rs.next()) {
-            Aviso aviso = mapearAviso(rs);
-            lista.add(aviso);
-        }
-        return lista;
-    }
-    
     private Aviso mapearAviso(ResultSet rs) throws Exception {
         Aviso aviso = new Aviso();
         aviso.setIdAviso(rs.getInt("id_aviso"));
@@ -240,8 +227,34 @@ public class ControladorAviso {
         aviso.setTipo(Aviso.TipoAviso.fromString(rs.getString("tipo")));
         aviso.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
         aviso.setActivo(rs.getBoolean("activo"));
-        aviso.setNombreAdministrador(rs.getString("nombre_administrador"));
+        aviso.setNombreAdministrador(obtenerNombreUsuario(aviso.getIdAdministrador()));
         return aviso;
+    }
+    
+    private String obtenerNombreUsuario(int idUsuario) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = ConexionDB.obtenerConexion();
+            if (conn == null) return null;
+            
+            String sql = "SELECT nombre FROM usuarios WHERE id_usuario = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, idUsuario);
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getString("nombre");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener nombre de usuario: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, pstmt, conn);
+        }
+        
+        return null;
     }
     
     private void cerrarRecursos(ResultSet rs, PreparedStatement pstmt, Connection conn) {
