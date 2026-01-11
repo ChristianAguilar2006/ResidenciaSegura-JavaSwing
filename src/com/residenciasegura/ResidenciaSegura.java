@@ -1,6 +1,5 @@
 package com.residenciasegura;
 
-import com.residenciasegura.controlador.ControladorLogin;
 import com.residenciasegura.menu.MenuAdmin;
 import com.residenciasegura.menu.MenuGuardia;
 import com.residenciasegura.menu.MenuResidente;
@@ -10,15 +9,14 @@ import com.residenciasegura.menu.impl.MenuResidenteImpl;
 import com.residenciasegura.modelo.Usuario;
 import java.util.Scanner;
 
-public class AppConsola {
+public class ResidenciaSegura {
     
     private static Scanner scanner = new Scanner(System.in);
     private static Usuario usuarioActual = null;
-    private static ControladorLogin controladorLogin = new ControladorLogin();
     
     public static void main(String[] args) {
         System.out.println("========================================");
-        System.out.println("   RESIDENCIA SEGURA - Sistema de Gestión");
+        System.out.println("   RESIDENCIA SEGURA - Sistema de Gestion");
         System.out.println("========================================\n");
         
         boolean continuar = true;
@@ -30,26 +28,26 @@ public class AppConsola {
             }
         }
         
-        System.out.println("\nGracias por usar Residencia Segura. ¡Hasta pronto!");
+        System.out.println("\nGracias por usar Residencia Segura. Hasta pronto!");
         scanner.close();
     }
     
     private static boolean mostrarMenuLogin() {
-        System.out.println("\n=== INICIO DE SESIÓN ===");
-        System.out.print("Correo electrónico: ");
+        System.out.println("\n=== INICIO DE SESION ===");
+        System.out.print("Correo electronico: ");
         String correo = scanner.nextLine();
         
-        System.out.print("Contraseña: ");
+        System.out.print("Contrasena: ");
         String password = scanner.nextLine();
         
-        usuarioActual = controladorLogin.autenticarUsuario(correo, password);
+        usuarioActual = Usuario.autenticarUsuario(correo, password);
         
         if (usuarioActual != null) {
-            System.out.println("\n✓ ¡Bienvenido " + usuarioActual.getNombre() + "!");
+            System.out.println("\nBienvenido " + usuarioActual.getNombre() + "!");
             System.out.println("Rol: " + usuarioActual.getRol().getValor());
             return true;
         } else {
-            System.out.println("\n Credenciales inválidas");
+            System.out.println("\n Credenciales invalidas");
             System.out.print("¿Desea intentar de nuevo? (s/n): ");
             String respuesta = scanner.nextLine().toLowerCase();
             return respuesta.equals("s");

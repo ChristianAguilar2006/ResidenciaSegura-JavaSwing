@@ -1,10 +1,9 @@
 package com.residenciasegura.menu.impl;
 
-import com.residenciasegura.controlador.ControladorAviso;
-import com.residenciasegura.controlador.ControladorPago;
-import com.residenciasegura.controlador.ControladorReporte;
 import com.residenciasegura.menu.MenuResidente;
 import com.residenciasegura.modelo.Aviso;
+import com.residenciasegura.modelo.TipoReporte;
+import com.residenciasegura.modelo.TipoServicio;
 import com.residenciasegura.modelo.Pago;
 import com.residenciasegura.modelo.Reporte;
 import com.residenciasegura.modelo.Usuario;
@@ -17,25 +16,19 @@ public class MenuResidenteImpl implements MenuResidente {
     
     private final Scanner scanner = new Scanner(System.in);
     private final Usuario usuarioActual;
-    private final ControladorPago controladorPago;
-    private final ControladorReporte controladorReporte;
-    private final ControladorAviso controladorAviso;
     
     public MenuResidenteImpl(Usuario usuario) {
         this.usuarioActual = usuario;
-        this.controladorPago = new ControladorPago();
-        this.controladorReporte = new ControladorReporte();
-        this.controladorAviso = new ControladorAviso();
     }
     
     @Override
     public boolean mostrarMenu() {
-        System.out.println("\n=== MENÚ RESIDENTE ===");
+        System.out.println("\n=== MENU RESIDENTE ===");
         System.out.println("1. Pagar Servicios");
         System.out.println("2. Crear Reporte");
         System.out.println("3. Ver Avisos");
-        System.out.println("4. Cerrar Sesión");
-        System.out.print("\nSeleccione una opción: ");
+        System.out.println("4. Cerrar Sesion");
+        System.out.print("\nSeleccione una opcion: ");
         
         int opcion = leerEntero();
         
@@ -52,7 +45,7 @@ public class MenuResidenteImpl implements MenuResidente {
             case 4:
                 return false;
             default:
-                System.out.println("Opción inválida");
+                System.out.println("Opción invalida");
                 return true;
         }
     }
@@ -65,7 +58,7 @@ public class MenuResidenteImpl implements MenuResidente {
             System.out.println("2. Crear Nuevo Pago");
             System.out.println("3. Pagar Servicio");
             System.out.println("4. Volver");
-            System.out.print("\nSeleccione una opción: ");
+            System.out.print("\nSeleccione una opcion: ");
             
             int opcion = leerEntero();
             
@@ -83,28 +76,28 @@ public class MenuResidenteImpl implements MenuResidente {
                     continuar = false;
                     break;
                 default:
-                    System.out.println("Opción inválida");
+                    System.out.println("Opción invalida");
             }
         }
     }
     
     private void verMisPagos() {
         System.out.println("\n=== MIS PAGOS ===");
-        List<Pago> pagos = controladorPago.obtenerPorUsuario(usuarioActual.getIdUsuario());
+        List<Pago> pagos = Pago.obtenerPorUsuario(usuarioActual.getIdUsuario());
         
         if (pagos.isEmpty()) {
             System.out.println("No tiene pagos registrados");
             return;
         }
         
-        System.out.printf("%-5s %-15s %-12s %-12s %-12s %-15s%n",
-            "ID", "Tipo", "Monto", "Fecha", "Estado", "Método");
+        System.out.printf("%-5s %-15s %-12s %-12s %-12s%n",
+            "ID", "Tipo", "Monto", "Fecha", "Estado");
         System.out.println("----------------------------------------------------------------------------------------");
         
         for (Pago p : pagos) {
-            System.out.printf("%-5d %-15s $%-11.2f %-12s %-12s %-15s%n",
+            System.out.printf("%-5d %-15s $%-11.2f %-12s %-12s%n",
                 p.getIdPago(), p.getTipoServicio().getValor(), p.getMonto(),
-                p.getFechaPago(), p.getEstado().getValor(), p.getMetodoPago().getValor());
+                p.getFechaPago(), p.getEstado());
         }
     }
     
@@ -112,7 +105,7 @@ public class MenuResidenteImpl implements MenuResidente {
         System.out.println("\n=== CREAR NUEVO PAGO ===");
         System.out.print("Tipo de servicio (alicuota/agua/luz/internet/mantenimiento/otro): ");
         String tipoStr = scanner.nextLine().toLowerCase();
-        Pago.TipoServicio tipo = Pago.TipoServicio.fromString(tipoStr);
+        TipoServicio tipo = TipoServicio.fromString(tipoStr);
         
         System.out.print("Monto: ");
         BigDecimal monto = leerBigDecimal();
@@ -121,22 +114,17 @@ public class MenuResidenteImpl implements MenuResidente {
         String fechaStr = scanner.nextLine();
         Date fecha = Date.valueOf(fechaStr);
         
-        System.out.print("Método de pago (efectivo/transferencia/tarjeta): ");
-        String metodoStr = scanner.nextLine().toLowerCase();
-        Pago.MetodoPago metodo = Pago.MetodoPago.fromString(metodoStr);
-        
         Pago pago = new Pago();
         pago.setIdUsuario(usuarioActual.getIdUsuario());
         pago.setTipoServicio(tipo);
         pago.setMonto(monto);
         pago.setFechaPago(fecha);
-        pago.setEstado(Pago.EstadoPago.PENDIENTE);
-        pago.setMetodoPago(metodo);
+        pago.setEstado("pendiente");
         
-        if (controladorPago.crearPago(pago)) {
-            System.out.println("✓ Pago creado exitosamente");
+        if (Pago.crearPago(pago)) {
+            System.out.println(" Pago creado exitosamente");
         } else {
-            System.out.println("✗ Error al crear pago");
+            System.out.println(" Error al crear pago");
         }
     }
     
@@ -147,26 +135,26 @@ public class MenuResidenteImpl implements MenuResidente {
         System.out.print("\nID del pago a pagar: ");
         int idPago = leerEntero();
         
-        Pago pago = controladorPago.obtenerPorId(idPago);
+        Pago pago = Pago.obtenerPorId(idPago);
         if (pago == null) {
-            System.out.println("✗ Pago no encontrado");
+            System.out.println(" Pago no encontrado");
             return;
         }
         
         if (pago.getIdUsuario() != usuarioActual.getIdUsuario()) {
-            System.out.println("✗ Solo puede pagar sus propios servicios");
+            System.out.println(" Solo puede pagar sus propios servicios");
             return;
         }
         
-        if (pago.getEstado() != Pago.EstadoPago.PENDIENTE) {
-            System.out.println("✗ Solo se pueden pagar servicios pendientes");
+        if (!"pendiente".equalsIgnoreCase(pago.getEstado())) {
+            System.out.println(" Solo se pueden pagar servicios pendientes");
             return;
         }
         
-        if (controladorPago.marcarComoPagado(idPago)) {
-            System.out.println("✓ Servicio pagado exitosamente");
+        if (Pago.marcarComoPagado(idPago)) {
+            System.out.println(" Servicio pagado exitosamente");
         } else {
-            System.out.println("✗ Error al procesar el pago");
+            System.out.println(" Error al procesar el pago");
         }
     }
     
@@ -174,36 +162,35 @@ public class MenuResidenteImpl implements MenuResidente {
         System.out.println("\n=== CREAR REPORTE ===");
         System.out.print("Tipo (mantenimiento/seguridad/limpieza/otro): ");
         String tipoStr = scanner.nextLine().toLowerCase();
-        Reporte.TipoReporte tipo = Reporte.TipoReporte.fromString(tipoStr);
+        TipoReporte tipo = TipoReporte.fromString(tipoStr);
         
-        System.out.print("Ubicación: ");
+        System.out.print("Ubicacion: ");
         String ubicacion = scanner.nextLine();
         
-        System.out.print("Descripción: ");
+        System.out.print("Descripcion: ");
         String descripcion = scanner.nextLine();
         
         System.out.print("Prioridad (baja/media/alta): ");
         String prioridadStr = scanner.nextLine().toLowerCase();
-        Reporte.Prioridad prioridad = Reporte.Prioridad.fromString(prioridadStr);
         
         Reporte reporte = new Reporte();
         reporte.setIdUsuario(usuarioActual.getIdUsuario());
         reporte.setTipo(tipo);
         reporte.setUbicacion(ubicacion);
         reporte.setDescripcion(descripcion);
-        reporte.setPrioridad(prioridad);
-        reporte.setEstado(Reporte.EstadoReporte.PENDIENTE);
+        reporte.setPrioridad(prioridadStr);
+        reporte.setEstado("pendiente");
         
-        if (controladorReporte.crearReporte(reporte)) {
-            System.out.println("✓ Reporte creado exitosamente");
+        if (Reporte.crearReporte(reporte)) {
+            System.out.println(" Reporte creado exitosamente");
         } else {
-            System.out.println("✗ Error al crear reporte");
+            System.out.println(" Error al crear reporte");
         }
     }
     
     private void verAvisos() {
         System.out.println("\n=== AVISOS ===");
-        List<Aviso> avisos = controladorAviso.obtenerActivos();
+        List<Aviso> avisos = Aviso.obtenerActivos();
         
         if (avisos.isEmpty()) {
             System.out.println("No hay avisos disponibles");
@@ -229,7 +216,7 @@ public class MenuResidenteImpl implements MenuResidente {
                 String input = scanner.nextLine();
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.print("Por favor ingrese un número válido: ");
+                System.out.print("Por favor ingrese un número valido: ");
             }
         }
     }
@@ -240,7 +227,7 @@ public class MenuResidenteImpl implements MenuResidente {
                 String input = scanner.nextLine();
                 return new BigDecimal(input);
             } catch (NumberFormatException e) {
-                System.out.print("Por favor ingrese un monto válido: ");
+                System.out.print("Por favor ingrese un monto valido: ");
             }
         }
     }

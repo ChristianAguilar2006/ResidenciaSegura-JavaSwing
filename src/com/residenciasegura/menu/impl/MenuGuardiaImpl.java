@@ -1,7 +1,5 @@
 package com.residenciasegura.menu.impl;
 
-import com.residenciasegura.controlador.ControladorAviso;
-import com.residenciasegura.controlador.ControladorReporte;
 import com.residenciasegura.menu.MenuGuardia;
 import com.residenciasegura.modelo.Aviso;
 import com.residenciasegura.modelo.Reporte;
@@ -13,23 +11,19 @@ public class MenuGuardiaImpl implements MenuGuardia {
     
     private final Scanner scanner = new Scanner(System.in);
     private final Usuario usuarioActual;
-    private final ControladorReporte controladorReporte;
-    private final ControladorAviso controladorAviso;
     
     public MenuGuardiaImpl(Usuario usuario) {
         this.usuarioActual = usuario;
-        this.controladorReporte = new ControladorReporte();
-        this.controladorAviso = new ControladorAviso();
     }
     
     @Override
     public boolean mostrarMenu() {
-        System.out.println("\n=== MENÚ GUARDIA ===");
+        System.out.println("\n=== MENU GUARDIA ===");
         System.out.println("1. Ver Reportes");
         System.out.println("2. Atender Reporte");
         System.out.println("3. Ver Avisos");
-        System.out.println("4. Cerrar Sesión");
-        System.out.print("\nSeleccione una opción: ");
+        System.out.println("4. Cerrar Sesion");
+        System.out.print("\nSeleccione una opcion: ");
         
         int opcion = leerEntero();
         
@@ -46,14 +40,14 @@ public class MenuGuardiaImpl implements MenuGuardia {
             case 4:
                 return false;
             default:
-                System.out.println("Opción inválida");
+                System.out.println("Opción invalida");
                 return true;
         }
     }
     
     private void verReportes() {
         System.out.println("\n=== REPORTES PENDIENTES ===");
-        List<Reporte> reportes = controladorReporte.obtenerPendientes();
+        List<Reporte> reportes = Reporte.obtenerPendientes();
         
         if (reportes.isEmpty()) {
             System.out.println("No hay reportes pendientes");
@@ -67,7 +61,7 @@ public class MenuGuardiaImpl implements MenuGuardia {
         for (Reporte r : reportes) {
             System.out.printf("%-5d %-20s %-15s %-12s %-20s%n",
                 r.getIdReporte(), r.getNombreUsuario(), r.getTipo().getValor(),
-                r.getPrioridad().getValor(), r.getFechaReporte());
+                r.getPrioridad(), r.getFechaReporte());
         }
         
         System.out.print("\nPresione Enter para continuar...");
@@ -81,16 +75,16 @@ public class MenuGuardiaImpl implements MenuGuardia {
         System.out.print("\nID del reporte a atender: ");
         int idReporte = leerEntero();
         
-        if (controladorReporte.asignarGuardia(idReporte, usuarioActual.getIdUsuario())) {
-            System.out.println("✓ Reporte asignado exitosamente. Estado cambiado a 'En Proceso'");
+        if (Reporte.asignarGuardia(idReporte, usuarioActual.getIdUsuario())) {
+            System.out.println(" Reporte asignado exitosamente. Estado cambiado a 'En Proceso'");
         } else {
-            System.out.println("✗ Error al atender el reporte");
+            System.out.println(" Error al atender el reporte");
         }
     }
     
     private void verAvisos() {
         System.out.println("\n=== AVISOS ===");
-        List<Aviso> avisos = controladorAviso.obtenerActivos();
+        List<Aviso> avisos = Aviso.obtenerActivos();
         
         if (avisos.isEmpty()) {
             System.out.println("No hay avisos disponibles");
@@ -116,7 +110,7 @@ public class MenuGuardiaImpl implements MenuGuardia {
                 String input = scanner.nextLine();
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.print("Por favor ingrese un número válido: ");
+                System.out.print("Por favor ingrese un número valido: ");
             }
         }
     }

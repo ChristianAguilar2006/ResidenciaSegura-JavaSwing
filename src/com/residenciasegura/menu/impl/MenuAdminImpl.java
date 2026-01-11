@@ -1,12 +1,10 @@
 package com.residenciasegura.menu.impl;
 
-import com.residenciasegura.controlador.ControladorAviso;
-import com.residenciasegura.controlador.ControladorPago;
-import com.residenciasegura.controlador.ControladorReporte;
-import com.residenciasegura.controlador.ControladorUsuario;
 import com.residenciasegura.menu.MenuAdmin;
 import com.residenciasegura.modelo.Aviso;
 import com.residenciasegura.modelo.Pago;
+import com.residenciasegura.modelo.Rol;
+import com.residenciasegura.modelo.TipoAviso;
 import com.residenciasegura.modelo.Reporte;
 import com.residenciasegura.modelo.Usuario;
 import java.util.List;
@@ -16,28 +14,20 @@ public class MenuAdminImpl implements MenuAdmin {
     
     private final Scanner scanner = new Scanner(System.in);
     private final Usuario usuarioActual;
-    private final ControladorUsuario controladorUsuario;
-    private final ControladorPago controladorPago;
-    private final ControladorReporte controladorReporte;
-    private final ControladorAviso controladorAviso;
     
     public MenuAdminImpl(Usuario usuario) {
         this.usuarioActual = usuario;
-        this.controladorUsuario = new ControladorUsuario();
-        this.controladorPago = new ControladorPago();
-        this.controladorReporte = new ControladorReporte();
-        this.controladorAviso = new ControladorAviso();
     }
     
     @Override
     public boolean mostrarMenu() {
-        System.out.println("\n=== MENÚ ADMINISTRADOR ===");
-        System.out.println("1. Gestión de Usuarios");
+        System.out.println("\n=== MENU ADMINISTRADOR ===");
+        System.out.println("1. Gestion de Usuarios");
         System.out.println("2. Consultar Pagos");
-        System.out.println("3. Gestión de Reportes");
-        System.out.println("4. Gestión de Avisos");
-        System.out.println("5. Cerrar Sesión");
-        System.out.print("\nSeleccione una opción: ");
+        System.out.println("3. Gestion de Reportes");
+        System.out.println("4. Gestion de Avisos");
+        System.out.println("5. Cerrar Sesion");
+        System.out.print("\nSeleccione una opcion: ");
         
         int opcion = leerEntero();
         
@@ -57,7 +47,7 @@ public class MenuAdminImpl implements MenuAdmin {
             case 5:
                 return false;
             default:
-                System.out.println("Opción inválida");
+                System.out.println("Opción invalida");
                 return true;
         }
     }
@@ -71,7 +61,7 @@ public class MenuAdminImpl implements MenuAdmin {
             System.out.println("3. Actualizar Usuario");
             System.out.println("4. Eliminar Usuario");
             System.out.println("5. Volver");
-            System.out.print("\nSeleccione una opción: ");
+            System.out.print("\nSeleccione una opcion: ");
             
             int opcion = leerEntero();
             
@@ -92,14 +82,14 @@ public class MenuAdminImpl implements MenuAdmin {
                     continuar = false;
                     break;
                 default:
-                    System.out.println("Opción inválida");
+                    System.out.println("Opción invalida");
             }
         }
     }
     
     private void listarUsuarios() {
         System.out.println("\n=== LISTA DE USUARIOS ===");
-        List<Usuario> usuarios = controladorUsuario.obtenerTodos();
+        List<Usuario> usuarios = Usuario.obtenerTodos();
         
         if (usuarios.isEmpty()) {
             System.out.println("No hay usuarios registrados");
@@ -107,7 +97,7 @@ public class MenuAdminImpl implements MenuAdmin {
         }
         
         System.out.printf("%-5s %-30s %-30s %-15s %-20s %-15s%n", 
-            "ID", "Nombre", "Correo", "Rol", "Departamento", "Teléfono");
+            "ID", "Nombre", "Correo", "Rol", "Departamento", "Telefono");
         System.out.println("--------------------------------------------------------------------------------------------------------");
         
         for (Usuario u : usuarios) {
@@ -125,17 +115,17 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.print("Correo: ");
         String correo = scanner.nextLine();
         
-        System.out.print("Contraseña: ");
+        System.out.print("Contrasena: ");
         String password = scanner.nextLine();
         
         System.out.print("Rol (admin/residente/guardia): ");
         String rolStr = scanner.nextLine().toLowerCase();
-        Usuario.Rol rol = Usuario.Rol.fromString(rolStr);
+        Rol rol = Rol.fromString(rolStr);
         
         System.out.print("Departamento: ");
         String departamento = scanner.nextLine();
         
-        System.out.print("Teléfono: ");
+        System.out.print("Telefono: ");
         String telefono = scanner.nextLine();
         
         Usuario usuario = new Usuario();
@@ -146,10 +136,10 @@ public class MenuAdminImpl implements MenuAdmin {
         usuario.setDepartamento(departamento);
         usuario.setTelefono(telefono);
         
-        if (controladorUsuario.crearUsuario(usuario)) {
-            System.out.println("✓ Usuario creado exitosamente");
+        if (Usuario.crearUsuario(usuario)) {
+            System.out.println(" Usuario creado exitosamente");
         } else {
-            System.out.println("✗ Error al crear usuario");
+            System.out.println(" Error al crear usuario");
         }
     }
     
@@ -158,9 +148,9 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.print("ID del usuario a actualizar: ");
         int id = leerEntero();
         
-        Usuario usuario = controladorUsuario.obtenerPorId(id);
+        Usuario usuario = Usuario.obtenerPorId(id);
         if (usuario == null) {
-            System.out.println("✗ Usuario no encontrado");
+            System.out.println(" Usuario no encontrado");
             return;
         }
         
@@ -177,14 +167,14 @@ public class MenuAdminImpl implements MenuAdmin {
         String departamento = scanner.nextLine();
         if (!departamento.isEmpty()) usuario.setDepartamento(departamento);
         
-        System.out.print("Nuevo teléfono (Enter para mantener): ");
+        System.out.print("Nuevo telefono (Enter para mantener): ");
         String telefono = scanner.nextLine();
         if (!telefono.isEmpty()) usuario.setTelefono(telefono);
         
-        if (controladorUsuario.actualizarUsuario(usuario)) {
-            System.out.println("✓ Usuario actualizado exitosamente");
+        if (Usuario.actualizarUsuario(usuario)) {
+            System.out.println(" Usuario actualizado exitosamente");
         } else {
-            System.out.println("✗ Error al actualizar usuario");
+            System.out.println(" Error al actualizar usuario");
         }
     }
     
@@ -194,40 +184,39 @@ public class MenuAdminImpl implements MenuAdmin {
         int id = leerEntero();
         
         if (id == usuarioActual.getIdUsuario()) {
-            System.out.println("✗ No puede eliminar su propio usuario");
+            System.out.println(" No puede eliminar su propio usuario");
             return;
         }
         
-        System.out.print("¿Está seguro? (s/n): ");
+        System.out.print("¿Esta seguro? (s/n): ");
         String confirmacion = scanner.nextLine().toLowerCase();
         
         if (confirmacion.equals("s")) {
-            if (controladorUsuario.eliminarUsuario(id)) {
-                System.out.println("✓ Usuario eliminado exitosamente");
+            if (Usuario.eliminarUsuario(id)) {
+                System.out.println(" Usuario eliminado exitosamente");
             } else {
-                System.out.println("✗ Error al eliminar usuario");
+                System.out.println(" Error al eliminar usuario");
             }
         }
     }
     
     private void consultarPagos() {
         System.out.println("\n=== CONSULTA DE PAGOS ===");
-        List<Pago> pagos = controladorPago.obtenerTodos();
+        List<Pago> pagos = Pago.obtenerTodos();
         
         if (pagos.isEmpty()) {
             System.out.println("No hay pagos registrados");
             return;
         }
         
-        System.out.printf("%-5s %-20s %-15s %-12s %-12s %-12s %-15s%n",
-            "ID", "Usuario", "Tipo", "Monto", "Fecha", "Estado", "Método");
+        System.out.printf("%-5s %-20s %-15s %-12s %-12s %-12s%n",
+            "ID", "Usuario", "Tipo", "Monto", "Fecha", "Estado");
         System.out.println("--------------------------------------------------------------------------------------------------------");
         
         for (Pago p : pagos) {
-            System.out.printf("%-5d %-20s %-15s $%-11.2f %-12s %-12s %-15s%n",
+            System.out.printf("%-5d %-20s %-15s $%-11.2f %-12s %-12s%n",
                 p.getIdPago(), p.getNombreUsuario(), p.getTipoServicio().getValor(),
-                p.getMonto(), p.getFechaPago(), p.getEstado().getValor(), 
-                p.getMetodoPago().getValor());
+                p.getMonto(), p.getFechaPago(), p.getEstado());
         }
         
         System.out.print("\nPresione Enter para continuar...");
@@ -242,7 +231,7 @@ public class MenuAdminImpl implements MenuAdmin {
             System.out.println("2. Ver Detalle de Reporte");
             System.out.println("3. Eliminar Reporte");
             System.out.println("4. Volver");
-            System.out.print("\nSeleccione una opción: ");
+            System.out.print("\nSeleccione una opcion: ");
             
             int opcion = leerEntero();
             
@@ -260,14 +249,14 @@ public class MenuAdminImpl implements MenuAdmin {
                     continuar = false;
                     break;
                 default:
-                    System.out.println("Opción inválida");
+                    System.out.println("Opción invalida");
             }
         }
     }
     
     private void listarReportes() {
         System.out.println("\n=== LISTA DE REPORTES ===");
-        List<Reporte> reportes = controladorReporte.obtenerTodos();
+        List<Reporte> reportes = Reporte.obtenerTodos();
         
         if (reportes.isEmpty()) {
             System.out.println("No hay reportes registrados");
@@ -281,7 +270,7 @@ public class MenuAdminImpl implements MenuAdmin {
         for (Reporte r : reportes) {
             System.out.printf("%-5d %-20s %-15s %-12s %-20s %-12s%n",
                 r.getIdReporte(), r.getNombreUsuario(), r.getTipo().getValor(),
-                r.getPrioridad().getValor(), r.getFechaReporte(), r.getEstado().getValor());
+                r.getPrioridad(), r.getFechaReporte(), r.getEstado());
         }
     }
     
@@ -289,9 +278,9 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.print("\nID del reporte: ");
         int id = leerEntero();
         
-        Reporte reporte = controladorReporte.obtenerPorId(id);
+        Reporte reporte = Reporte.obtenerPorId(id);
         if (reporte == null) {
-            System.out.println("✗ Reporte no encontrado");
+            System.out.println(" Reporte no encontrado");
             return;
         }
         
@@ -299,10 +288,10 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.println("ID: " + reporte.getIdReporte());
         System.out.println("Usuario: " + reporte.getNombreUsuario());
         System.out.println("Tipo: " + reporte.getTipo().getValor());
-        System.out.println("Descripción: " + reporte.getDescripcion());
-        System.out.println("Ubicación: " + reporte.getUbicacion());
-        System.out.println("Prioridad: " + reporte.getPrioridad().getValor());
-        System.out.println("Estado: " + reporte.getEstado().getValor());
+        System.out.println("Descripcion: " + reporte.getDescripcion());
+        System.out.println("Ubicacion: " + reporte.getUbicacion());
+        System.out.println("Prioridad: " + reporte.getPrioridad());
+        System.out.println("Estado: " + reporte.getEstado());
         System.out.println("Fecha: " + reporte.getFechaReporte());
         if (reporte.getNombreGuardia() != null) {
             System.out.println("Guardia asignado: " + reporte.getNombreGuardia());
@@ -313,14 +302,14 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.print("\nID del reporte a eliminar: ");
         int id = leerEntero();
         
-        System.out.print("¿Está seguro? (s/n): ");
+        System.out.print("¿Esta seguro? (s/n): ");
         String confirmacion = scanner.nextLine().toLowerCase();
         
         if (confirmacion.equals("s")) {
-            if (controladorReporte.eliminarReporte(id)) {
-                System.out.println("✓ Reporte eliminado exitosamente");
+            if (Reporte.eliminarReporte(id)) {
+                System.out.println(" Reporte eliminado exitosamente");
             } else {
-                System.out.println("✗ Error al eliminar reporte");
+                System.out.println(" Error al eliminar reporte");
             }
         }
     }
@@ -334,7 +323,7 @@ public class MenuAdminImpl implements MenuAdmin {
             System.out.println("3. Actualizar Aviso");
             System.out.println("4. Eliminar Aviso");
             System.out.println("5. Volver");
-            System.out.print("\nSeleccione una opción: ");
+            System.out.print("\nSeleccione una opcion: ");
             
             int opcion = leerEntero();
             
@@ -355,33 +344,33 @@ public class MenuAdminImpl implements MenuAdmin {
                     continuar = false;
                     break;
                 default:
-                    System.out.println("Opción inválida");
+                    System.out.println("Opción invalida");
             }
         }
     }
     
     private void listarAvisos() {
         System.out.println("\n=== LISTA DE AVISOS ===");
-        List<Aviso> avisos = controladorAviso.obtenerTodos();
+        List<Aviso> avisos = Aviso.obtenerTodos();
         
         if (avisos.isEmpty()) {
             System.out.println("No hay avisos registrados");
             return;
         }
         
-        System.out.printf("%-5s %-30s %-15s %-10s%n", "ID", "Título", "Tipo", "Activo");
+        System.out.printf("%-5s %-30s %-15s %-10s%n", "ID", "Titulo", "Tipo", "Activo");
         System.out.println("----------------------------------------------------------------");
         
         for (Aviso a : avisos) {
             System.out.printf("%-5d %-30s %-15s %-10s%n",
                 a.getIdAviso(), a.getTitulo(), a.getTipo().getValor(), 
-                a.isActivo() ? "Sí" : "No");
+                a.isActivo() ? "Si" : "No");
         }
     }
     
     private void crearAviso() {
         System.out.println("\n=== CREAR AVISO ===");
-        System.out.print("Título: ");
+        System.out.print("Titulo: ");
         String titulo = scanner.nextLine();
         
         System.out.print("Mensaje: ");
@@ -389,7 +378,7 @@ public class MenuAdminImpl implements MenuAdmin {
         
         System.out.print("Tipo (informativo/alerta/mantenimiento/emergencia): ");
         String tipoStr = scanner.nextLine().toLowerCase();
-        Aviso.TipoAviso tipo = Aviso.TipoAviso.fromString(tipoStr);
+        TipoAviso tipo = TipoAviso.fromString(tipoStr);
         
         Aviso aviso = new Aviso();
         aviso.setIdAdministrador(usuarioActual.getIdUsuario());
@@ -398,10 +387,10 @@ public class MenuAdminImpl implements MenuAdmin {
         aviso.setTipo(tipo);
         aviso.setActivo(true);
         
-        if (controladorAviso.crearAviso(aviso)) {
-            System.out.println("✓ Aviso creado exitosamente");
+        if (Aviso.crearAviso(aviso)) {
+            System.out.println(" Aviso creado exitosamente");
         } else {
-            System.out.println("✗ Error al crear aviso");
+            System.out.println(" Error al crear aviso");
         }
     }
     
@@ -409,13 +398,13 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.print("\nID del aviso a actualizar: ");
         int id = leerEntero();
         
-        Aviso aviso = controladorAviso.obtenerPorId(id);
+        Aviso aviso = Aviso.obtenerPorId(id);
         if (aviso == null) {
-            System.out.println("✗ Aviso no encontrado");
+            System.out.println(" Aviso no encontrado");
             return;
         }
         
-        System.out.print("Nuevo título (Enter para mantener): ");
+        System.out.print("Nuevo titulo (Enter para mantener): ");
         String titulo = scanner.nextLine();
         if (!titulo.isEmpty()) aviso.setTitulo(titulo);
         
@@ -423,10 +412,10 @@ public class MenuAdminImpl implements MenuAdmin {
         String mensaje = scanner.nextLine();
         if (!mensaje.isEmpty()) aviso.setMensaje(mensaje);
         
-        if (controladorAviso.actualizarAviso(aviso)) {
-            System.out.println("✓ Aviso actualizado exitosamente");
+        if (Aviso.actualizarAviso(aviso)) {
+            System.out.println(" Aviso actualizado exitosamente");
         } else {
-            System.out.println("✗ Error al actualizar aviso");
+            System.out.println(" Error al actualizar aviso");
         }
     }
     
@@ -434,14 +423,14 @@ public class MenuAdminImpl implements MenuAdmin {
         System.out.print("\nID del aviso a eliminar: ");
         int id = leerEntero();
         
-        System.out.print("¿Está seguro? (s/n): ");
+        System.out.print("¿Esta seguro? (s/n): ");
         String confirmacion = scanner.nextLine().toLowerCase();
         
         if (confirmacion.equals("s")) {
-            if (controladorAviso.eliminarAviso(id)) {
-                System.out.println("✓ Aviso eliminado exitosamente");
+            if (Aviso.eliminarAviso(id)) {
+                System.out.println(" Aviso eliminado exitosamente");
             } else {
-                System.out.println("✗ Error al eliminar aviso");
+                System.out.println(" Error al eliminar aviso");
             }
         }
     }
@@ -452,7 +441,7 @@ public class MenuAdminImpl implements MenuAdmin {
                 String input = scanner.nextLine();
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.print("Por favor ingrese un número válido: ");
+                System.out.print("Por favor ingrese un número valido: ");
             }
         }
     }
